@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -35,6 +37,22 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Incident::class, mappedBy="user")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Incident::class, mappedBy="user")
+     */
+    private $incidents;
+
+    public function __construct()
+    {
+        $this->createdAt = new ArrayCollection();
+        $this->incidents = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -115,5 +133,65 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection|Incident[]
+     */
+    public function getCreatedAt(): Collection
+    {
+        return $this->createdAt;
+    }
+
+    public function addCreatedAt(Incident $createdAt): self
+    {
+        if (!$this->createdAt->contains($createdAt)) {
+            $this->createdAt[] = $createdAt;
+            $createdAt->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreatedAt(Incident $createdAt): self
+    {
+        if ($this->createdAt->removeElement($createdAt)) {
+            // set the owning side to null (unless already changed)
+            if ($createdAt->getUser() === $this) {
+                $createdAt->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Incident[]
+     */
+    public function getIncidents(): Collection
+    {
+        return $this->incidents;
+    }
+
+    public function addIncident(Incident $incident): self
+    {
+        if (!$this->incidents->contains($incident)) {
+            $this->incidents[] = $incident;
+            $incident->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIncident(Incident $incident): self
+    {
+        if ($this->incidents->removeElement($incident)) {
+            // set the owning side to null (unless already changed)
+            if ($incident->getUser() === $this) {
+                $incident->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
