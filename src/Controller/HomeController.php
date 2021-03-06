@@ -11,6 +11,7 @@ use Symfony\Component\Mime\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Incident;
 use App\Form\IncidentType;
+use App\Message\MailNotification;
 
 class HomeController extends AbstractController
 {
@@ -34,14 +35,7 @@ class HomeController extends AbstractController
 
         	// sleep(10);
 
-        	$email = (new Email())
-        	->from($task->getUser()->getEmail())
-        	->to('you@example.com')
-        	->subject('New Incident #'. $task->getId(). ' - '. $task->getUser()->getEmail())
-        	->html('<p>'. $task->getDescription() . '</p>');
-
-        	sleep(10);
-        	$mailer->send($email);
+        	$this->dispatchMessage(new MailNotification($task->getDescription(), $task->getId(),$task->getUser()->getEmail()));
 
         	return $this->redirectToRoute('home');
         }

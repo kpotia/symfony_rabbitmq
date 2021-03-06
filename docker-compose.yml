@@ -5,3 +5,7 @@ services:
   mailer:
     image: schickling/mailcatcher
     ports: [1025, 1080]
+
+  rabitmq:
+    image: rabbitmq:3.7-management
+    ports: [5672, 15672]
